@@ -1,0 +1,207 @@
+---
+title: "![](img/KLN_banner_v05_125.png)  \n  R for Absolute Beginners"
+subtitle: "KIND Learning Network webinar, 16/11/2022"
+author: "Brendan Clarke"
+format: 
+  revealjs:
+    theme: dark
+editor: visual
+bibliography: references.bib
+---
+
+```{r}
+#| include: false
+knitr::opts_chunk$set(echo = F, warning = F, message = F, results = 'asis')
+library("pacman")
+p_load(tidyr,readr,DiagrammeR,ggplot2,dplyr,lubridate,NHSRplotthedots,readxl ,stringr,NHSRdatasets, purrr, rlang,glue,tmap,cranlogs)
+```
+
+## Questions for the audience...
+
+Let's [collect some data...](https://forms.office.com/r/5N4JQ3RKY0)
+
+```{=html}
+<style>
+.container{
+  display: flex;
+}
+.col {
+  flex: 1;
+}
+</style>
+```
+<!-- ::: container -->
+
+<!-- ::: col -->
+
+<!-- Some simple questions that we can use for analysis -->
+
+<!-- ::: -->
+
+<!-- ::: col -->
+
+<!-- ![](img/potato.png){fig-align="center" width="300"}(https://freesvg.org/bakedpotato) -->
+
+<!-- ::: -->
+
+<!-- ::: -->
+
+<!-- ## multislide -->
+
+<!-- ::: container -->
+
+<!-- ::: col -->
+
+<!-- Column 1 -->
+
+<!-- ::: -->
+
+<!-- ::: col -->
+
+<!-- Column 2 -->
+
+<!-- ::: -->
+
+<!-- ::: -->
+
+## Session overview
+
+-   a brief overview and history of R
+-   R code in practice
+-   use cases in H&SC
+-   R vs other
+-   next steps and training
+
+## A brief overview of R
+
+```{r}
+cran_totals <- cran_downloads("R") %>%
+  summarise(date, total = sum(count)) %>%
+  distinct()
+```
+
+> R is a free software environment for statistical computing and graphics ([r-project.org](https://www.r-project.org/about.html))
+
+-   free and open-source
+-   multiplatform
+-   modular ([18500-odd packages](https://cran.r-project.org/web/packages/))
+-   widely used (`r as.integer(cran_totals[2])` downloads yesterday)
+
+## A brief history of R
+
+-   Robert Gentleman and Ross Ihaka [@ihaka1998r]
+    -   Interest in extending the tools available in [S](https://en.wikipedia.org/wiki/S_(programming_language))
+
+    -   Early transition to free software model
+
+    -   1997 "core group"
+-   [R Foundation](https://www.r-project.org/foundation/)
+    -   Maintains [CRAN](https://cran.r-project.org/mirrors.html)
+
+    -   Links with [FSF](https://www.fsf.org/)
+
+## In the beginning...
+
+```{r}
+#| include: false
+1+1
+results <- 1+1
+results ^2
+`Lots of circles`<- rnorm(1:1000)
+plot(`Lots of circles`)
+```
+
+## Data
+
+-   your data
+
+```{r}
+#| echo: false
+
+# load some data from file
+# remove some empty columns from Forms
+survey_data_read <- function(file){
+  survey_data <- read_excel(file, 
+           col_types = c("numeric", "date", "date", "text", "text", "text", "text", "numeric", "text"))
+}
+
+survey_data <- map_dfr(list.files(path = "data/survey",  full.names = T), survey_data_read) %>%
+  distinct() %>%
+  select(-c(4:5))
+
+# save the full names, and rename with shorter ones
+survey_names <- tibble(full_names = names(survey_data), short_names=c("ID", "start", "end", "heard", "worked", "confidence", "usual"))
+
+names(survey_data) <- survey_names$short_names
+
+# play with the data
+survey_data %>%
+  count(confidence) %>%
+  ggplot() +
+  geom_col(aes(x=confidence,y=n))
+  
+survey_data %>%
+  group_by(heard, worked) %>%
+  count(confidence, worked) %>%
+  ggplot() +
+  geom_col(aes(x=confidence, y=n, fill=worked)) +
+  facet_wrap(~heard)
+  
+```
+
+## Reproducible analytics
+
+Write the code once, and just update the data
+
+```{r}
+
+map_dfr(list.files(path = "data/csv",  full.names = T), read_csv) %>%
+  distinct() %>%
+  mutate(Date = dmy(Date)) %>%
+  mutate(Status = case_when(str_detect(Status, "Complete") ~ "Completed", 
+                   TRUE ~ Status)) %>%
+  count(month = month(Date, label=T), Training, Status) %>%
+  ggplot() +
+  geom_col(aes(x=month, y=n, fill=Status)) +
+  facet_wrap(~Training + Status, ncol=3) +
+  theme(legend.position = "none")
+  
+```
+
+## Reproducible analytics
+
+```{r}
+map_dfr(list.files(path = "data/csv2",  full.names = T), read_csv) %>%
+  distinct() %>%
+  mutate(Date = dmy(Date)) %>%
+  mutate(Status = case_when(str_detect(Status, "Complete") ~ "Completed", 
+                   TRUE ~ Status)) %>%
+  count(month = month(Date, label=T), Training, Status) %>%
+  ggplot() +
+  geom_col(aes(x=month, y=n, fill=Status)) +
+  facet_wrap(~Training + Status, ncol=3) +
+  theme(legend.position = "none")
+  
+```
+
+## Reproducible analytics
+
+```{r}
+
+training_graphs <- function(path) {
+map_dfr(list.files(path = path,  full.names = T), read_csv) %>%
+  distinct() %>%
+  mutate(Date = dmy(Date)) %>%
+  mutate(Status = case_when(str_detect(Status, "Complete") ~ "Completed", 
+                   TRUE ~ Status)) %>%
+  count(month = month(Date, label=T), Training, Status) %>%
+  ggplot() +
+  geom_col(aes(x=month, y=n, fill=Status)) +
+  facet_wrap(~Training + Status, ncol=3) +
+  theme(legend.position = "none")
+}
+
+training_graphs(path = "data/csv3")
+```
+
+## References
