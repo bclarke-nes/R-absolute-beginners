@@ -2,6 +2,8 @@
 *.pdf
 *.docx
 /archive
+/ref
+/R_ab_*
 knit_list.r
 readme.md
 

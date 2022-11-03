@@ -5,76 +5,36 @@ author: "Brendan Clarke"
 format: 
   revealjs:
     theme: dark
+    incremental: true
 editor: visual
 bibliography: references.bib
 ---
 
-```{r}
+```{r loading}
 #| include: false
 knitr::opts_chunk$set(echo = F, warning = F, message = F, results = 'asis')
+
 library("pacman")
-p_load(tidyr,readr,DiagrammeR,ggplot2,dplyr,lubridate,NHSRplotthedots,readxl ,stringr,NHSRdatasets, purrr, rlang,glue,tmap,cranlogs)
+p_load(tidyr,readr,ggplot2,dplyr,lubridate,readxl,stringr,glue, cranlogs,NHSRplotthedots, plotly, PRISMA2020)
+
 ```
 
 ## Questions for the audience...
 
 Let's [collect some data...](https://forms.office.com/r/5N4JQ3RKY0)
 
-```{=html}
-<style>
-.container{
-  display: flex;
-}
-.col {
-  flex: 1;
-}
-</style>
-```
-<!-- ::: container -->
+## This webinar
 
-<!-- ::: col -->
-
-<!-- Some simple questions that we can use for analysis -->
-
-<!-- ::: -->
-
-<!-- ::: col -->
-
-<!-- ![](img/potato.png){fig-align="center" width="300"}(https://freesvg.org/bakedpotato) -->
-
-<!-- ::: -->
-
-<!-- ::: -->
-
-<!-- ## multislide -->
-
-<!-- ::: container -->
-
-<!-- ::: col -->
-
-<!-- Column 1 -->
-
-<!-- ::: -->
-
-<!-- ::: col -->
-
-<!-- Column 2 -->
-
-<!-- ::: -->
-
-<!-- ::: -->
-
-## Session overview
-
--   a brief overview and history of R
+-   overview and history of R
 -   R code in practice
--   use cases in H&SC
--   R vs other
+-   some use cases in H&SC
+-   R and R alternatives
 -   next steps and training
 
 ## A brief overview of R
 
 ```{r}
+#| cache: true
 cran_totals <- cran_downloads("R") %>%
   summarise(date, total = sum(count)) %>%
   distinct()
@@ -82,10 +42,18 @@ cran_totals <- cran_downloads("R") %>%
 
 > R is a free software environment for statistical computing and graphics ([r-project.org](https://www.r-project.org/about.html))
 
+. . .
+
+![](img/9378219392_2851adf2d2_k.jpg){fig-alt="Insect Collection by Barta IV" fig-align="center" width="600"}
+
+[Insect Collection by Barta IV](https://www.flickr.com/photos/98640399\@N08/9378219392)
+
+## Features
+
 -   free and open-source
 -   multiplatform
 -   modular ([18500-odd packages](https://cran.r-project.org/web/packages/))
--   widely used (`r as.integer(cran_totals[2])` downloads yesterday)
+-   widely used (`r as.integer(cran_totals[2])` downloads on `r cran_totals[1]`)
 
 ## A brief history of R
 
@@ -100,24 +68,48 @@ cran_totals <- cran_downloads("R") %>%
 
     -   Links with [FSF](https://www.fsf.org/)
 
-## In the beginning...
+## R code in practice
 
 ```{r}
 #| include: false
+#| eval: false
+
+# intended to run in the console
 1+1
 results <- 1+1
 results ^2
 `Lots of circles`<- rnorm(1:1000)
 plot(`Lots of circles`)
+
+# show Rstudio
+
+# run in script
+#library(readr)
+read_csv("data/sample_data.csv")
+
+pass <- 40
+sample_data <- read_csv("data/sample_data.csv")
+
+sample_data <- sample_data %>%
+  mutate(total = score_1 + score_2 + score_3) %>%
+  mutate(Scaled = total * 100 / max(total)) %>%
+  mutate(class = case_when(Scaled > pass ~ "pass",
+                           TRUE ~ "fail"))
+sample_data
+
+quantile(sample_data$Scaled)
+
+
+# do a live Rmarkdown
+
+# don't do a live Shiny - but do show the ScotPHO profiles tool at https://scotland.shinyapps.io/ScotPHO_profiles_tool/
+
 ```
 
-## Data
-
--   your data
+## (your) data
 
 ```{r}
 #| echo: false
-
 # load some data from file
 # remove some empty columns from Forms
 survey_data_read <- function(file){
@@ -125,7 +117,7 @@ survey_data_read <- function(file){
            col_types = c("numeric", "date", "date", "text", "text", "text", "text", "numeric", "text"))
 }
 
-survey_data <- map_dfr(list.files(path = "data/survey",  full.names = T), survey_data_read) %>%
+survey_data <- purrr::map_dfr(list.files(path = "data/survey",  full.names = T), survey_data_read) %>%
   distinct() %>%
   select(-c(4:5))
 
@@ -133,29 +125,153 @@ survey_data <- map_dfr(list.files(path = "data/survey",  full.names = T), survey
 survey_names <- tibble(full_names = names(survey_data), short_names=c("ID", "start", "end", "heard", "worked", "confidence", "usual"))
 
 names(survey_data) <- survey_names$short_names
+```
 
-# play with the data
+```{r}
+#| echo: true
 survey_data %>%
   count(confidence) %>%
   ggplot() +
   geom_col(aes(x=confidence,y=n))
-  
+```
+
+## (your) data
+
+```{r}
+#| echo: true
 survey_data %>%
   group_by(heard, worked) %>%
   count(confidence, worked) %>%
-  ggplot() +
-  geom_col(aes(x=confidence, y=n, fill=worked)) +
-  facet_wrap(~heard)
+  ggplot() + geom_col(aes(x=confidence, y=n, fill=worked)) + facet_wrap(~heard)
   
 ```
 
-## Reproducible analytics
+## Fancy demo 1
+
+```{r}
+#| cache: true
+ranges <- tribble(
+  ~"Venue",	~"Pmi",	~"Gmi",	~"Tmi",	~"Pma",	~"Gma",	~"Tma",
+  "University",2.5,2.5,7.5,1,1,1,
+  "Self-learn",7.5,7.5,5,1,1,2,
+  "YouTube",7.5,7.5,2.5,1,1,1,
+  "FutureLearn",6.5,7.5,7.5,1,1,2,
+  "KIND",8.5,3.5,7.5,1,1,1.5,
+  "Workplace",8.5,1,6,1,0.5,1
+)
+
+space = tibble()
+
+#loop round to generate normally-distributed data around xbar and sd from ranges
+for (i in 1:nrow(ranges)) {
+  P <- rnorm(200, mean = ranges[[i,2]], sd=ranges[[i, 5]])
+  G <- rnorm(200, mean = ranges[[i,3]], sd=ranges[[i, 6]])
+  T <- rnorm(200, mean = ranges[[i,4]], sd=ranges[[i, 7]])
+  df <- tibble(P=P, G=G, T=T, Venue=paste0(ranges[[i, 1]]))
+  space <- rbind(space,df)
+  rm(df, G, i, P, T)
+}
+
+#factorise the learning venues
+space$Venue <- as.factor(space$Venue)
+
+#KIND only coloured plot
+plot_ly(space, x = ~ P, y = ~ G, z = ~ T, color = ~Venue, colors = "Set1") %>% 
+  add_markers() %>% 
+  layout(scene = list(xaxis = list(title = 'More practical'),
+                                   yaxis = list(title = 'More general'),
+                                   zaxis = list(title = 'More advanced')))
+```
+
+## Fancy demo 2
+
+```{r}
+#| cache: true
+#absolutely needs read.csv rather than read_csv
+read.csv("data/PRISMA_data.csv") %>%
+  PRISMA_data() %>%
+  PRISMA_flowdiagram(., 
+                   fontsize = 14,
+                          title_colour = "AquaMarine",
+                           greybox_colour = "MistyRose",
+                           interactive = FALSE,
+                           previous = TRUE,
+                           other = FALSE,
+                           side_boxes = FALSE)
+
+```
+
+## Uses: who is using it?
+
+-   PHS
+-   widely across SG
+-   sporadically used across NHSS boards
+
+## Uses: why are they using it?
+
+-   to replace troublesome systems
+    -   SPSS and other propriatary systems (licencing costs)
+    -   replacing end-of-life systems (Access e.g.)
+-   to harmonise analysis across a team (common analysis platform)
+- SG committment to open-source code under [DSSS](https://www.gov.scot/publications/digital-scotland-service-standard/pages/11--make-new-source-code-open/)
+
+## Uses: simplifying analysis
+
+. . .
+
+(looking at you, Excel...)
+
+. . .
+
+-   R separates data from analysis
+-   packages help with complex analysis
+-   reproducible analysis + team work
+
+## XmR charts (front)
+
+![](images/paste-EB956E42.png)
+
+## XmR charts (back)
+
+![](images/paste-D6118680.png)
+
+## XmR charts (R)
+
+```{r}
+#| echo: true
+#| cache: true
+read_csv("data/spc/spc1.csv") %>%
+  mutate(date = dmy(date)) %>%
+  ptd_spc(members, date, target=35, fix_after_n_points=20)
+```
+
+## XmR charts (R)
+
+```{r}
+#| echo: true
+#| cache: true
+read_csv("data/spc/spc2.csv") %>%
+  mutate(date = dmy(date)) %>%
+  ptd_spc(members, date, target=50, fix_after_n_points=20)
+```
+
+## XmR charts (R)
+
+```{r}
+#| echo: true
+#| cache: true
+purrr::map_dfr(list.files("data/spc", full.names = T), read_csv) %>%
+  mutate(date = dmy(date)) %>%
+  ptd_spc(members, date, target=50, fix_after_n_points=20)
+```
+
+## Uses: reproducible analytics
 
 Write the code once, and just update the data
 
 ```{r}
-
-map_dfr(list.files(path = "data/csv",  full.names = T), read_csv) %>%
+#| cache: true
+purrr::map_dfr(list.files(path = "data/csv",  full.names = T), read_csv) %>%
   distinct() %>%
   mutate(Date = dmy(Date)) %>%
   mutate(Status = case_when(str_detect(Status, "Complete") ~ "Completed", 
@@ -171,7 +287,8 @@ map_dfr(list.files(path = "data/csv",  full.names = T), read_csv) %>%
 ## Reproducible analytics
 
 ```{r}
-map_dfr(list.files(path = "data/csv2",  full.names = T), read_csv) %>%
+#| cache: true
+purrr::map_dfr(list.files(path = "data/csv2",  full.names = T), read_csv) %>%
   distinct() %>%
   mutate(Date = dmy(Date)) %>%
   mutate(Status = case_when(str_detect(Status, "Complete") ~ "Completed", 
@@ -187,9 +304,10 @@ map_dfr(list.files(path = "data/csv2",  full.names = T), read_csv) %>%
 ## Reproducible analytics
 
 ```{r}
-
+#| cache: true
 training_graphs <- function(path) {
-map_dfr(list.files(path = path,  full.names = T), read_csv) %>%
+
+purrr::map_dfr(list.files(path = path,  full.names = T), read_csv) %>%
   distinct() %>%
   mutate(Date = dmy(Date)) %>%
   mutate(Status = case_when(str_detect(Status, "Complete") ~ "Completed", 
@@ -203,5 +321,50 @@ map_dfr(list.files(path = path,  full.names = T), read_csv) %>%
 
 training_graphs(path = "data/csv3")
 ```
+
+## Reproducible analytics
+
+-   See the code (and data) for this talk [on GitHub](https://github.com/bclarke-nes/R-absolute-beginners)
+
+## R vs the world
+
+-   Power BI - dashboard, data, built-in to M365 licences
+-   Tableau - specialist applications, cost
+-   Excel - learning curve
+-   hundreds of proprietary data analysis platforms
+-   Python
+
+## Pain curves
+
+```{r}
+#| cache: true
+pain_curves <- ggplot() +
+  xlim(0L, 10L) +
+  geom_function(fun= ~.x^2, n=10000, color="darkgreen") +
+  geom_label(aes(x=9, y=100),color="darkgreen", label="Excel") +
+  theme_minimal() +
+  xlab("Experience") +
+  ylab("Pain") + 
+   theme(axis.ticks = element_blank(),
+        axis.text = element_blank())
+
+pain_curves
+```
+
+## Pain curves
+
+```{r}
+pain_curves + geom_function(fun= ~100-10*.x, n=10000, color="darkblue") +
+  geom_label(aes(x=1, y=100),color="darkblue", label="R")
+```
+
+## Next steps
+
+- learn
+  - R4DS
+  - training available
+- manage
+  - ??
+
 
 ## References
