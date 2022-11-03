@@ -7,7 +7,7 @@ format:
     theme: dark
     incremental: true
 editor: visual
-bibliography: references.bib
+bibliography: data/references.bib
 ---
 
 ```{r loading}
