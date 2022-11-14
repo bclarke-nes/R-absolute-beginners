@@ -6,6 +6,7 @@ format:
   revealjs:
     theme: dark
     incremental: true
+    chalkboard: true
 editor: visual
 bibliography: data/references.bib
 ---
@@ -19,6 +20,23 @@ p_load(tidyr,readr,ggplot2,dplyr,lubridate,readxl,stringr,glue, cranlogs,NHSRplo
 
 ```
 
+## Forthcoming KIND webinars
+
+| Webinar                    | Date                | Speaker                     | Title                                | Registration link                                                                                                                                                                                                                                               |
+|-------------|-------------|-------------|-------------|----------------------|
+| Nov 2022 (presentations)   | 2022-11-22 11:00:00 | Vikki Hadden (NES TEL team) | Top tips for hosting online training | [Registration link](https://teams.microsoft.com/registration/veDvEDCgykuAnLXmdF5Jmg,Ky-i_BlW7UW-F8bQ-oCXgQ,Txk_U8vzG0e20m8jHEqFQg,74peMtdYKk-QV3-1ymLA_g,VtExWXmHlEuwC2shz0_Opw,g9uaAMgnHUas_iAormG6jQ?mode=read&tenantId=10efe0bd-a030-4bca-809c-b5e6745e499a) |
+| Dec 2022 (KIND conference) | 2022-12-07 13:00:00 | KIND community              | KIND conference                      | [Registration link](https://teams.microsoft.com/registration/veDvEDCgykuAnLXmdF5Jmg,Ky-i_BlW7UW-F8bQ-oCXgQ,Txk_U8vzG0e20m8jHEqFQg,ppY3G7e1eE-GHrYkZI9gSQ,VuZZnMY7B0SDJIlNvlb86A,fK31iS4xtE6BGCjZWRNg8Q?mode=read&tenantId=10efe0bd-a030-4bca-809c-b5e6745e499a) |
+
+## Before we begin
+
+![](images/paste-C07C5718.png)
+
+[This Photo](https://pixnio.com/media/movie-video-recording-filming-street-television-news) by Unknown Author is licensed under [CC BY](https://creativecommons.org/licenses/by/3.0/)
+
+::: notes
+Remember to hit record!
+:::
+
 ## Questions for the audience...
 
 Let's [collect some data...](https://forms.office.com/r/5N4JQ3RKY0)
@@ -28,13 +46,14 @@ Let's [collect some data...](https://forms.office.com/r/5N4JQ3RKY0)
 -   overview and history of R
 -   R code in practice
 -   some use cases in H&SC
--   R and R alternatives
+-   R and not-R
 -   next steps and training
 
 ## A brief overview of R
 
 ```{r}
 #| cache: true
+
 cran_totals <- cran_downloads("R") %>%
   summarise(date, total = sum(count)) %>%
   distinct()
@@ -42,28 +61,49 @@ cran_totals <- cran_downloads("R") %>%
 
 > R is a free software environment for statistical computing and graphics ([r-project.org](https://www.r-project.org/about.html))
 
-. . .
+-   free and open-source
+-   multiplatform
+-   widely used (`r as.integer(cran_totals[2])` downloads on `r cran_totals[1]`)
+
+## 
 
 ![](img/9378219392_2851adf2d2_k.jpg){fig-alt="Insect Collection by Barta IV" fig-align="center" width="600"}
 
-[Insect Collection by Barta IV](https://www.flickr.com/photos/98640399\@N08/9378219392)
+[Insect Collection by Barta IV](https://www.flickr.com/photos/98640399@N08/9378219392)
 
-## Features
+## Architecture
 
--   free and open-source
--   multiplatform
--   modular ([18500-odd packages](https://cran.r-project.org/web/packages/))
--   widely used (`r as.integer(cran_totals[2])` downloads on `r cran_totals[1]`)
+-   R is modular
+-   [18900-odd packages](https://cran.r-project.org/web/packages/)
+-   Enormous [scope of applications](https://cran.r-project.org/web/packages/available_packages_by_date.html)
+-   Design questions often hinge on finding the right package
+
+. . .
+
+-   So there's a good reason that R can be confusing. It's not one thing, but many.
+
+::: aside
+e.g. this presentation was created in R Quarto using [Revealjs](https://quarto.org/docs/presentations/revealjs/)
+:::
 
 ## A brief history of R
 
+-   [S](https://en.wikipedia.org/wiki/S_(programming_language))
+
+    > Aimed: to "turn ideas into software, quickly and faithfully" [@chambers1998]
+
 -   Robert Gentleman and Ross Ihaka [@ihaka1998r]
+
     -   Interest in extending the tools available in [S](https://en.wikipedia.org/wiki/S_(programming_language))
 
     -   Early transition to free software model
 
     -   1997 "core group"
+
+## Who owns R?
+
 -   [R Foundation](https://www.r-project.org/foundation/)
+
     -   Maintains [CRAN](https://cran.r-project.org/mirrors.html)
 
     -   Links with [FSF](https://www.fsf.org/)
@@ -82,6 +122,11 @@ results ^2
 plot(`Lots of circles`)
 
 # show Rstudio
+```
+
+```{r}
+#| include: false
+#| eval: false
 
 # run in script
 #library(readr)
@@ -98,7 +143,9 @@ sample_data <- sample_data %>%
 sample_data
 
 quantile(sample_data$Scaled)
+```
 
+```{r}
 
 # do a live Rmarkdown
 
@@ -213,7 +260,7 @@ read.csv("data/PRISMA_data.csv") %>%
     -   SPSS and other propriatary systems (licencing costs)
     -   replacing end-of-life systems (Access e.g.)
 -   to harmonise analysis across a team (common analysis platform)
-- SG committment to open-source code under [DSSS](https://www.gov.scot/publications/digital-scotland-service-standard/pages/11--make-new-source-code-open/)
+-   SG committment to open-source code under [DSSS](https://www.gov.scot/publications/digital-scotland-service-standard/pages/11--make-new-source-code-open/)
 
 ## Uses: simplifying analysis
 
@@ -224,8 +271,9 @@ read.csv("data/PRISMA_data.csv") %>%
 . . .
 
 -   R separates data from analysis
--   packages help with complex analysis
--   reproducible analysis + team work
+-   "there's a package for..."
+-   reproducible analysis
+-   collaboration
 
 ## XmR charts (front)
 
@@ -326,13 +374,13 @@ training_graphs(path = "data/csv3")
 
 -   See the code (and data) for this talk [on GitHub](https://github.com/bclarke-nes/R-absolute-beginners)
 
-## R vs the world
+## R and not-R
 
 -   Power BI - dashboard, data, built-in to M365 licences
--   Tableau - specialist applications, cost
--   Excel - learning curve
--   hundreds of proprietary data analysis platforms
+-   Tableau - specialist, cost
+-   Excel - pain curve...
 -   Python
+-   (hundreds of proprietary data analysis platforms)
 
 ## Pain curves
 
@@ -347,7 +395,9 @@ pain_curves <- ggplot() +
   ylab("Pain") + 
    theme(axis.ticks = element_blank(),
         axis.text = element_blank())
+```
 
+```{r}
 pain_curves
 ```
 
@@ -360,11 +410,22 @@ pain_curves + geom_function(fun= ~100-10*.x, n=10000, color="darkblue") +
 
 ## Next steps
 
-- learn
-  - R4DS
-  - training available
-- manage
-  - ??
-
+-   self-paced
+    -   [**R4DS**](https://r4ds.had.co.nz/) [@R4DS]
+    -   write/fail/[stackoverflow](https://stackoverflow.com/questions/tagged/r) cycle
+    -   [PHS Data Science Knowledge Base](https://public-health-scotland.github.io/knowledge-base/)
+-   KIND Learning Network training
+    -   introductory R and Rmarkdown - [code](https://github.com/bclarke-nes/Introductory-R-and-Rmarkdown)/[info](https://learn.nes.nhs.scot/62249)/[booking](https://forms.office.com/pages/responsepage.aspx?id=veDvEDCgykuAnLXmdF5JmpopIZB9ynRJnrPUHVFccipUODcyUFVVSDJVTVdXQVY2SFlZMjRURjNFNiQlQCN0PWcu)
+    -   intermediate R - [code](https://github.com/bclarke-nes/Intermediate-R)/[info](https://learn.nes.nhs.scot/64644)/[booking](https://forms.office.com/pages/responsepage.aspx?id=veDvEDCgykuAnLXmdF5JmrkoZevsKKNFvRPjjB3DiO1UMjlUTzdOUzEwMFoxRDhLWjZZUktKSVRHTC4u)
 
 ## References
+
+::: {#refs}
+:::
+
+## Forthcoming KIND webinars
+
+| Webinar                    | Date                | Speaker                     | Title                                | Registration link                                                                                                                                                                                                                                               |
+|-------------|-------------|-------------|-------------|----------------------|
+| Nov 2022 (presentations)   | 2022-11-22 11:00:00 | Vikki Hadden (NES TEL team) | Top tips for hosting online training | [Registration link](https://teams.microsoft.com/registration/veDvEDCgykuAnLXmdF5Jmg,Ky-i_BlW7UW-F8bQ-oCXgQ,Txk_U8vzG0e20m8jHEqFQg,74peMtdYKk-QV3-1ymLA_g,VtExWXmHlEuwC2shz0_Opw,g9uaAMgnHUas_iAormG6jQ?mode=read&tenantId=10efe0bd-a030-4bca-809c-b5e6745e499a) |
+| Dec 2022 (KIND conference) | 2022-12-07 13:00:00 | KIND community              | KIND conference                      | [Registration link](https://teams.microsoft.com/registration/veDvEDCgykuAnLXmdF5Jmg,Ky-i_BlW7UW-F8bQ-oCXgQ,Txk_U8vzG0e20m8jHEqFQg,ppY3G7e1eE-GHrYkZI9gSQ,VuZZnMY7B0SDJIlNvlb86A,fK31iS4xtE6BGCjZWRNg8Q?mode=read&tenantId=10efe0bd-a030-4bca-809c-b5e6745e499a) |
