@@ -63,11 +63,16 @@ cran_totals <- cran_downloads("R") %>%
 
 -   free and open-source
 -   multiplatform
--   widely used (`r as.integer(cran_totals[2])` downloads on `r cran_totals[1]`)
+-   large user base (`r as.integer(cran_totals[2])` downloads on `r cran_totals[1]`)
+- prominent in health, industry, biosciences
 
 ## 
 
 ![](img/9378219392_2851adf2d2_k.jpg){fig-alt="Insect Collection by Barta IV" fig-align="center" width="600"}
+
+::: notes
+bio-flavour // JBS // related but diverse family // source of power - and confusion
+:::
 
 [Insect Collection by Barta IV](https://www.flickr.com/photos/98640399@N08/9378219392)
 
@@ -77,13 +82,11 @@ cran_totals <- cran_downloads("R") %>%
 -   [18900-odd packages](https://cran.r-project.org/web/packages/)
 -   Enormous [scope of applications](https://cran.r-project.org/web/packages/available_packages_by_date.html)
 -   Design questions often hinge on finding the right package
-
-. . .
-
+- e.g. this presentation was created in R Quarto using [Revealjs](https://quarto.org/docs/presentations/revealjs/)
 -   So there's a good reason that R can be confusing. It's not one thing, but many.
 
-::: aside
-e.g. this presentation was created in R Quarto using [Revealjs](https://quarto.org/docs/presentations/revealjs/)
+::: notes
+simplicity in design
 :::
 
 ## A brief history of R
@@ -315,8 +318,6 @@ purrr::map_dfr(list.files("data/spc", full.names = T), read_csv) %>%
 
 ## Uses: reproducible analytics
 
-Write the code once, and just update the data
-
 ```{r}
 #| cache: true
 purrr::map_dfr(list.files(path = "data/csv",  full.names = T), read_csv) %>%
@@ -385,7 +386,6 @@ training_graphs(path = "data/csv3")
 ## Pain curves
 
 ```{r}
-#| cache: true
 pain_curves <- ggplot() +
   xlim(0L, 10L) +
   geom_function(fun= ~.x^2, n=10000, color="darkgreen") +
@@ -406,6 +406,7 @@ pain_curves
 ```{r}
 pain_curves + geom_function(fun= ~100-10*.x, n=10000, color="darkblue") +
   geom_label(aes(x=1, y=100),color="darkblue", label="R")
+
 ```
 
 ## Next steps
@@ -422,6 +423,10 @@ pain_curves + geom_function(fun= ~100-10*.x, n=10000, color="darkblue") +
 
 ::: {#refs}
 :::
+
+## Q & A
+
+Please could you fill in the [evaluation](https://forms.office.com/r/JfAm7WbLcP)?
 
 ## Forthcoming KIND webinars
 
