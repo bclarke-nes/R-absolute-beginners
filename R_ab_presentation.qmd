@@ -4,7 +4,7 @@ subtitle: "KIND Learning Network webinar, 16/11/2022"
 author: "Brendan Clarke"
 format: 
   revealjs:
-    theme: dark
+    theme: [default, custom.scss]
     incremental: true
     chalkboard: true
 editor: visual
