@@ -13,7 +13,7 @@ bibliography: data/references.bib
 
 ```{r loading}
 #| include: false
-knitr::opts_chunk$set(echo = F, warning = F, message = F, results = 'asis')
+knitr::opts_chunk$set(echo = F, warning = F, message = F, results = 'asis', fig.align = "center")
 
 library("pacman")
 p_load(tidyr,readr,ggplot2,dplyr,lubridate,readxl,stringr,glue, cranlogs,NHSRplotthedots, plotly, PRISMA2020)
@@ -22,14 +22,18 @@ p_load(tidyr,readr,ggplot2,dplyr,lubridate,readxl,stringr,glue, cranlogs,NHSRplo
 
 ## Forthcoming KIND webinars
 
+::: {style="font-size: 0.8em"}
+
 | Webinar                    | Date                | Speaker                     | Title                                | Registration link                                                                                                                                                                                                                                               |
-|-------------|-------------|-------------|-------------|----------------------|
+|---------------|---------------|---------------|---------------|---------------|
 | Nov 2022 (presentations)   | 2022-11-22 11:00:00 | Vikki Hadden (NES TEL team) | Top tips for hosting online training | [Registration link](https://teams.microsoft.com/registration/veDvEDCgykuAnLXmdF5Jmg,Ky-i_BlW7UW-F8bQ-oCXgQ,Txk_U8vzG0e20m8jHEqFQg,74peMtdYKk-QV3-1ymLA_g,VtExWXmHlEuwC2shz0_Opw,g9uaAMgnHUas_iAormG6jQ?mode=read&tenantId=10efe0bd-a030-4bca-809c-b5e6745e499a) |
 | Dec 2022 (KIND conference) | 2022-12-07 13:00:00 | KIND community              | KIND conference                      | [Registration link](https://teams.microsoft.com/registration/veDvEDCgykuAnLXmdF5Jmg,Ky-i_BlW7UW-F8bQ-oCXgQ,Txk_U8vzG0e20m8jHEqFQg,ppY3G7e1eE-GHrYkZI9gSQ,VuZZnMY7B0SDJIlNvlb86A,fK31iS4xtE6BGCjZWRNg8Q?mode=read&tenantId=10efe0bd-a030-4bca-809c-b5e6745e499a) |
 
+:::
+
 ## Before we begin
 
-![](images/paste-C07C5718.png)
+![](images/paste-C07C5718.png){fig-align="center"}
 
 [This Photo](https://pixnio.com/media/movie-video-recording-filming-street-television-news) by Unknown Author is licensed under [CC BY](https://creativecommons.org/licenses/by/3.0/)
 
@@ -64,7 +68,7 @@ cran_totals <- cran_downloads("R") %>%
 -   free and open-source
 -   multiplatform
 -   large user base (`r as.integer(cran_totals[2])` downloads on `r cran_totals[1]`)
-- prominent in health, industry, biosciences
+-   prominent in health, industry, biosciences
 
 ## 
 
@@ -82,7 +86,7 @@ bio-flavour // JBS // related but diverse family // source of power - and confus
 -   [18900-odd packages](https://cran.r-project.org/web/packages/)
 -   Enormous [scope of applications](https://cran.r-project.org/web/packages/available_packages_by_date.html)
 -   Design questions often hinge on finding the right package
-- e.g. this presentation was created in R Quarto using [Revealjs](https://quarto.org/docs/presentations/revealjs/)
+-   e.g. this presentation was created in R Quarto using [Revealjs](https://quarto.org/docs/presentations/revealjs/)
 -   So there's a good reason that R can be confusing. It's not one thing, but many.
 
 ::: notes
@@ -233,6 +237,8 @@ plot_ly(space, x = ~ P, y = ~ G, z = ~ T, color = ~Venue, colors = "Set1") %>%
                                    zaxis = list(title = 'More advanced')))
 ```
 
+3D visualisation using plot_ly [@plotly]
+
 ## Fancy demo 2
 
 ```{r}
@@ -250,6 +256,26 @@ read.csv("data/PRISMA_data.csv") %>%
                            side_boxes = FALSE)
 
 ```
+
+PRISMA flow diagram using PRISMA2020 [@PRISMA2020]
+
+## Fancy demo 3
+
+![](images/paste-E4B9B94F.png){fig-align="center"}
+
+Choropleth map using [geojsonio](https://cran.r-project.org/web/packages/geojsonio/index.html)
+
+## Fancy demo 4
+
+![](images/paste-47FCDEA3.png){fig-align="center" width="349"}
+
+Conference poster using posterdown [@posterdown], waffle [@waffle], and ggalluvial [@ggalluvial]
+
+## Fancy demo 5
+
+![](images/paste-74E1CABA.png){fig-align="center"}
+
+Sentiment analysis with wordcloud using tidytext [@tidytext], [lexicon](https://github.com/trinker/lexicon), [sentimentr](https://github.com/trinker/sentimentr), and [wordcloud](https://cran.r-project.org/web/packages/wordcloud/index.html)
 
 ## Uses: who is using it?
 
@@ -421,8 +447,13 @@ pain_curves + geom_function(fun= ~100-10*.x, n=10000, color="darkblue") +
 
 ## References
 
+::: {style="font-size: 0.8em"}
+
 ::: {#refs}
 :::
+
+:::
+
 
 ## Q & A
 
@@ -430,7 +461,11 @@ Please could you fill in the [evaluation](https://forms.office.com/r/JfAm7WbLcP)
 
 ## Forthcoming KIND webinars
 
+::: {style="font-size: 0.8em"}
+
 | Webinar                    | Date                | Speaker                     | Title                                | Registration link                                                                                                                                                                                                                                               |
-|-------------|-------------|-------------|-------------|----------------------|
+|---------------|---------------|---------------|---------------|---------------|
 | Nov 2022 (presentations)   | 2022-11-22 11:00:00 | Vikki Hadden (NES TEL team) | Top tips for hosting online training | [Registration link](https://teams.microsoft.com/registration/veDvEDCgykuAnLXmdF5Jmg,Ky-i_BlW7UW-F8bQ-oCXgQ,Txk_U8vzG0e20m8jHEqFQg,74peMtdYKk-QV3-1ymLA_g,VtExWXmHlEuwC2shz0_Opw,g9uaAMgnHUas_iAormG6jQ?mode=read&tenantId=10efe0bd-a030-4bca-809c-b5e6745e499a) |
 | Dec 2022 (KIND conference) | 2022-12-07 13:00:00 | KIND community              | KIND conference                      | [Registration link](https://teams.microsoft.com/registration/veDvEDCgykuAnLXmdF5Jmg,Ky-i_BlW7UW-F8bQ-oCXgQ,Txk_U8vzG0e20m8jHEqFQg,ppY3G7e1eE-GHrYkZI9gSQ,VuZZnMY7B0SDJIlNvlb86A,fK31iS4xtE6BGCjZWRNg8Q?mode=read&tenantId=10efe0bd-a030-4bca-809c-b5e6745e499a) |
+
+:::
